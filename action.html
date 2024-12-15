@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Status</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background for contrast */
+            color: #333;
+        }
+        .header {
+            background-color: #FFC107; /* Yellow background */
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .status {
+            background-color: #FFC107; /* Yellow status box */
+            border: 2px solid #FFC107; /* Yellow border */
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            transition: border-color 0.3s;
+        }
+        .status:hover {
+            border-color: #e0a800; /* Darker yellow for hover */
+        }
+        .status p {
+            color: #666; /* Gray text */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header text-center">
+            <h1>Parking Status</h1>
+            <p>Stay updated with the current parking availability.</p>
+        </div>
+        
+        <div class="status text-center">
+            <h2 id="status">Waiting for updates...</h2>
+            <p>Refresh every 5 seconds to get the latest parking status.</p>
+        </div>
+        
+        <div class="text-center">
+            <button id="refreshButton" class="btn btn-warning" style="margin-top: 20px;">Refresh Now</button>
+        </div>
+    </div>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const socket = new WebSocket('ws://localhost:3000'); // Adjust the WebSocket URL as needed
+
+        socket.onmessage = function(event) {
+            statusDiv.textContent = event.data; // Update the status on receiving a message
+        };
+
+        socket.onopen = function() {
+            console.log('Connected to the WebSocket server');
+        };
+
+        socket.onclose = function() {
+            console.log('Disconnected from the WebSocket server');
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+
+        // Refresh button functionality
+        document.getElementById('refreshButton').addEventListener('click', () => {
+            socket.send('Refresh'); // Send a message to trigger a status update (if needed)
+            statusDiv.textContent = 'Refreshing...'; // Indicate refresh action
+        });
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
